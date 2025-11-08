@@ -6,6 +6,10 @@ export async function POST(req: Request) {
   try {
     const { query } = await req.json();
 
+    // 🔹 ADD THIS: for debugging
+    console.log("🔹 Received query:", query);
+    console.log("🔹 GROQ_API_KEY exists?", !!process.env.GROQ_API_KEY);
+
     const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -29,6 +33,13 @@ export async function POST(req: Request) {
         max_tokens: 500,
       }),
     });
+
+    // 🔹 ADD THIS: show response info
+    console.log("🔹 Groq status:", response.status);
+
+    const text = await response.text();
+    console.log("🔹 Groq raw response:", text);
+
 
     if (!response.ok) {
       const text = await response.text();
