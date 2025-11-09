@@ -1,12 +1,12 @@
 {
-  "name": "web",
+  "name": "@analytics/web",
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --webpack",
-    "build": "next build --webpack",
-    "start": "next start",
-    "lint": "eslint"
+    "dev": "next dev -p 3000",
+    "build": "next build",
+    "start": "next start -p 3000",
+    "lint": "next lint"
   },
   "dependencies": {
     "class-variance-authority": "^0.7.1",
@@ -16,7 +16,8 @@
     "react": "19.2.0",
     "react-dom": "19.2.0",
     "recharts": "^3.3.0",
-    "tailwind-merge": "^3.3.1"
+    "tailwind-merge": "^3.3.1",
+    "tailwindcss-animate": "^1.0.7"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",

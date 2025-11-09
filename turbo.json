@@ -1,16 +1,21 @@
 {
-    "pipeline": {
-      "build": {
-        "dependsOn": ["^build"],
-        "outputs": ["dist/**", ".next/**"]
-      },
-      "dev": {
-        "cache": false,
-        "persistent": true
-      },
-      "lint": {
-        "outputs": []
-      }
+  "$schema": "https://turbo.build/schema.json",
+  "globalDependencies": [".env", ".env.local"],
+  "tasks": {
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": [".next/**", "dist/**"]
+    },
+    "dev": {
+      "cache": false,
+      "persistent": true,
+      "env": ["PORT", "DATABASE_URL", "NEXT_PUBLIC_API_BASE", "NEXT_PUBLIC_APP_URL"]
+    },
+    "lint": {
+      "outputs": []
+    },
+    "format": {
+      "outputs": []
     }
   }
-  
+}
