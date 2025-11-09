@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { fetchStats } from "@/lib/api";
+import { SetStateAction, useEffect, useState } from "react";
+import {fetchStats}  from "@/src/lib/api";
 
 export default function DashboardPage() {
   const [stats, setStats] = useState<any>(null);
@@ -10,8 +10,8 @@ export default function DashboardPage() {
 
   useEffect(() => {
     fetchStats()
-      .then((data) => setStats(data))
-      .catch((err) => setError(err.message))
+      .then((data: any) => setStats(data))
+      .catch((err: { message: SetStateAction<string | null>; }) => setError(err.message))
       .finally(() => setLoading(false));
   }, []);
 

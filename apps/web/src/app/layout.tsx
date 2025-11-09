@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ReactNode } from "react";
-import Link from "next/link";
+import { SidebarLink } from "@/components/SidebarLink";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -25,11 +25,11 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       <body className="bg-gray-50 text-gray-800 min-h-screen">
         {/* Navigation Bar */}
         <nav className="bg-white shadow-sm px-6 py-3 flex gap-6 font-medium sticky top-0 z-10">
-          <Link href="/" className="hover:text-blue-600 transition">Dashboard</Link>
-          <Link href="/invoices" className="hover:text-blue-600 transition">Invoices</Link>
-          <Link href="/vendors" className="hover:text-blue-600 transition">Vendors</Link>
-          <Link href="/trends" className="hover:text-blue-600 transition">Trends</Link>
-          <Link href="/chat-with-data" className="hover:text-blue-600 transition">Chat</Link>
+          <SidebarLink href="/dashboard" label="Dashboard" />
+          <SidebarLink href="/invoices" label="Invoices" />
+          <SidebarLink href="/vendors" label="Vendors" />
+          <SidebarLink href="/trends" label="Trends" />
+          <SidebarLink href="/chat-with-data" label="Chat" />
         </nav>
 
         {/* Main content area */}
@@ -38,19 +38,3 @@ export default function RootLayout({ children }: { children: ReactNode }) {
     </html>
   );
 }
-
-// export default function RootLayout({
-//   children,
-// }: Readonly<{
-//   children: React.ReactNode;
-// }>) {
-//   return (
-//     <html lang="en">
-//       <body
-//         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-//       >
-//         {children}
-//       </body>
-//     </html>
-//   );
-// }
