@@ -1,0 +1,20 @@
+// src/middleware/errorMiddleware.ts
+import { Request, Response, NextFunction } from "express";
+
+export const errorHandler = (
+  err: any,
+  _req: Request,
+  res: Response,
+  _next: NextFunction
+) => {
+  console.error("💥 Error caught by middleware:", err);
+
+  const statusCode = err.status || 500;
+  const message =
+    err.message || "An unexpected error occurred. Please try again later.";
+
+  res.status(statusCode).json({
+    error: message,
+    details: process.env.NODE_ENV === "development" ? err.stack : undefined,
+  });
+};

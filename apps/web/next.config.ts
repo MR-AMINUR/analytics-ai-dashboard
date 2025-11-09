@@ -1,16 +1,28 @@
 import type { NextConfig } from "next";
+import path from "path";
+
+const isDev = process.env.NODE_ENV !== "production";
 
 const nextConfig: NextConfig = {
-  // Add a rewrite rule to proxy backend API calls
+  // ✅ Turbopack alias instead of webpack
+  turbopack: {
+    resolveAlias: {
+      "@": path.resolve(__dirname, "src"),
+    },
+  },
+
+  // ✅ Proxy backend only in development
   async rewrites() {
-    return [
-      {
-        source: "/api/:path*",
-        destination: "http://localhost:4000/:path*", // Proxy to backend
-      },
-    ];
+    if (isDev) {
+      return [
+        {
+          source: "/api/:path*",
+          destination: "http://localhost:4000/:path*",
+        },
+      ];
+    }
+    return [];
   },
 };
 
 export default nextConfig;
-
