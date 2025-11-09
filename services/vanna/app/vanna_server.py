@@ -1,20 +1,23 @@
-from vanna.flask import VannaFlaskApp
-from vanna.remote import VannaDefault
-from sqlalchemy import create_engine
-#from flask_cors import CORS
+from fastapi import APIRouter, HTTPException
+from pydantic import BaseModel
+from .vanna_core import generate_sql
+from .db import run_query
 
-# Initialize your Vanna remote model
-vn = VannaDefault(model="flowbit-ai", api_key="vn-6f2728e0548a4ab79ace4ac5994af9eb")
+router = APIRouter()
 
-# ✅ Correct way to attach the database
-engine = create_engine("postgresql://postgres:0000@localhost:5432/analytics_ai")
-vn.db = engine
+class QueryRequest(BaseModel):
+    question: str
 
-# Launch the Flask app
-app = VannaFlaskApp(vn)
-# CORS(app)  # ✅ add this
-
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000)
-
-
+@router.post("/query")
+def handle_query(req: QueryRequest):
+    """
+    Endpoint: /query
+    Accepts JSON like: { "question": "List top 5 vendors by spend" }
+    Returns: { "sql": "<generated SQL>", "data": [ ... ] }
+    """
+    try:
+        sql = generate_sql(req.question)
+        data = run_query(sql)
+        return {"sql": sql, "data": data}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
