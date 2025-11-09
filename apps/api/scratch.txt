@@ -1,0 +1,100 @@
+api response
+
+api/stats
+{
+    "totalSpendYtd": 47732,
+    "totalInvoices": 6,
+    "documentsUploaded": 6,
+    "averageInvoiceValue": 7955.33
+}
+
+api/invoice-trends
+
+{
+    "totalSpendYtd": 47732,
+    "totalInvoices": 6,
+    "documentsUploaded": 6,
+    "averageInvoiceValue": 7955.33
+}
+
+api/vendors/top10
+
+[
+    {
+      "vendor_id": "4",
+      "vendor_name": "NextGen Pvt Ltd",
+      "spend": 24780
+    },
+    {
+      "vendor_id": "1",
+      "vendor_name": "TechNova Solutions",
+      "spend": 17700
+    },
+    {
+      "vendor_id": "5",
+      "vendor_name": "Pixel Works",
+      "spend": 2975
+    },
+    {
+      "vendor_id": "2",
+      "vendor_name": "Alpha Supplies Co.",
+      "spend": 1428
+    },
+    {
+      "vendor_id": "3",
+      "vendor_name": "DataFlow Systems",
+      "spend": 1176
+    },
+    {
+      "vendor_id": "6",
+      "vendor_name": "CloudAxis",
+      "spend": -327
+    }
+]
+
+api/category-spend
+[
+    {
+      "category": "4001",
+      "spend": 140000
+    },
+    {
+      "category": "7001",
+      "spend": 20000
+    },
+    {
+      "category": "4002",
+      "spend": 2500
+    },
+    {
+      "category": "8001",
+      "spend": 2400
+    },
+    {
+      "category": "6001",
+      "spend": 1000
+    },
+    {
+      "category": "5001",
+      "spend": 500
+    },
+    {
+      "category": "9001",
+      "spend": -300
+    }
+  ]
+
+api/cash-outflow
+{
+    "start": "2025-11-09T15:51:05.307Z",
+    "end": "2025-12-09T15:51:05.307Z",
+    "rows": []
+  }
+
+api/invoices
+{
+    "totalSpendYtd": 47732,
+    "totalInvoices": 6,
+    "documentsUploaded": 6,
+    "averageInvoiceValue": 7955.33
+  }

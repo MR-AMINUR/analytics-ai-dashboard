@@ -20,6 +20,11 @@ app.get("/health", (_req: Request, res: Response) => {
 // --- API Routes ---
 app.use("/api", routes);
 
+// src/index.ts
+(BigInt.prototype as any).toJSON = function () {
+  return this.toString();
+};
+
 // --- 404 Handler ---
 app.use((_req: Request, res: Response) => {
   res.status(404).json({ error: "Endpoint not found" });
