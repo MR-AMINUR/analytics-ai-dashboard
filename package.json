@@ -1,0 +1,19 @@
+{
+    "name": "analytics-ai-dashboard",
+    "private": true,
+    "workspaces": [
+      "apps/*",
+      "services/*"
+    ],
+    "devDependencies": {
+      "turbo": "^2.0.0",
+      "prettier": "^3.2.5"
+    },
+    "scripts": {
+      "dev": "turbo run dev --parallel",
+      "build": "turbo run build",
+      "lint": "turbo run lint",
+      "format": "prettier --write ."
+    }
+  }
+  
