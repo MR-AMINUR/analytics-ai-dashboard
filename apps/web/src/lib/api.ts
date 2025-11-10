@@ -11,12 +11,33 @@ export async function fetchData(endpoint: string) {
   }
 }
 
+
 export async function fetchStats() {
-  console.log("Fetching from:", `${API_BASE_URL}/api/stats`); // 👈 add this line
-  const res = await fetch(`${API_BASE_URL}/api/stats`);
-  if (!res.ok) throw new Error("Failed to fetch stats");
-  return res.json();
+  try {
+    const res = await fetch("/api/stats");
+    if (!res.ok) {
+      throw new Error(`Failed to fetch stats: ${res.status}`);
+    }
+    const data: {
+      totalSpend: number;
+      totalInvoices: number;
+      avgInvoice: number;
+    } = await res.json();
+    return data;
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(error.message);
+    }
+    throw new Error("Unknown error fetching stats");
+  }
 }
+
+// export async function fetchStats() {
+//   console.log("Fetching from:", `${API_BASE_URL}/api/stats`); // 👈 add this line
+//   const res = await fetch(`${API_BASE_URL}/api/stats`);
+//   if (!res.ok) throw new Error("Failed to fetch stats");
+//   return res.json();
+// }
 
 
 export async function fetchVendorsTop10() {

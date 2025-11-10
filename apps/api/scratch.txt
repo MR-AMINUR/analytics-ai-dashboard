@@ -1,0 +1,132 @@
+api response
+
+api/stats
+{
+    "totalSpendYtd": 47732,
+    "totalInvoices": 6,
+    "documentsUploaded": 6,
+    "averageInvoiceValue": 7955.33
+}
+
+api/invoice-trends
+
+{
+    "totalSpendYtd": 47732,
+    "totalInvoices": 6,
+    "documentsUploaded": 6,
+    "averageInvoiceValue": 7955.33
+}
+
+api/vendors/top10
+
+[
+    {
+      "vendor_id": "4",
+      "vendor_name": "NextGen Pvt Ltd",
+      "spend": 24780
+    },
+    {
+      "vendor_id": "1",
+      "vendor_name": "TechNova Solutions",
+      "spend": 17700
+    },
+    {
+      "vendor_id": "5",
+      "vendor_name": "Pixel Works",
+      "spend": 2975
+    },
+    {
+      "vendor_id": "2",
+      "vendor_name": "Alpha Supplies Co.",
+      "spend": 1428
+    },
+    {
+      "vendor_id": "3",
+      "vendor_name": "DataFlow Systems",
+      "spend": 1176
+    },
+    {
+      "vendor_id": "6",
+      "vendor_name": "CloudAxis",
+      "spend": -327
+    }
+]
+
+api/category-spend
+[
+    {
+      "category": "4001",
+      "spend": 140000
+    },
+    {
+      "category": "7001",
+      "spend": 20000
+    },
+    {
+      "category": "4002",
+      "spend": 2500
+    },
+    {
+      "category": "8001",
+      "spend": 2400
+    },
+    {
+      "category": "6001",
+      "spend": 1000
+    },
+    {
+      "category": "5001",
+      "spend": 500
+    },
+    {
+      "category": "9001",
+      "spend": -300
+    }
+  ]
+
+api/cash-outflow
+{
+    "start": "2025-11-09T15:51:05.307Z",
+    "end": "2025-12-09T15:51:05.307Z",
+    "rows": []
+  }
+
+api/invoices
+{
+    "totalSpendYtd": 47732,
+    "totalInvoices": 6,
+    "documentsUploaded": 6,
+    "averageInvoiceValue": 7955.33
+  }
+
+post : api/chat-with-data
+body in json
+{
+  "question": "List top 5 vendors by spend"
+}
+response
+{
+    "sql": "SELECT \n    v.vendor_name, \n    SUM(il.total_price) AS total_spend\nFROM \n    vendors v\nJOIN \n    invoices i ON v.vendor_id = i.vendor_id\nJOIN \n    invoice_line_items il ON i.invoice_id = il.invoice_id\nGROUP BY \n    v.vendor_name\nORDER BY \n    total_spend DESC\nLIMIT 5;",
+    "data": [
+        {
+            "vendor_name": "TechNova Solutions",
+            "total_spend": 142500.0
+        },
+        {
+            "vendor_name": "NextGen Pvt Ltd",
+            "total_spend": 20000.0
+        },
+        {
+            "vendor_name": "ABC Seller",
+            "total_spend": 4357.6
+        },
+        {
+            "vendor_name": "EasyFirma GmbH & Co KG",
+            "total_spend": 3159.25
+        },
+        {
+            "vendor_name": "pixa",
+            "total_spend": 3070.0
+        }
+    ]
+}

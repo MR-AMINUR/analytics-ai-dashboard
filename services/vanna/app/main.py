@@ -1,28 +1,20 @@
 from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
-from app.vanna_core import generate_sql_and_execute
+from .vanna_server import router
+import os
 
-app = FastAPI(title="Vanna AI Service")
+app = FastAPI(title="Vanna AI - Chat with Data")
 
-# Allow requests from Vercel frontend
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],  # Replace "*" with your frontend domain for production
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+app.include_router(router, prefix="")
 
 @app.get("/")
 def root():
-    return {"message": "Vanna AI Service running!"}
+    return {"message": "Vanna AI service is running"}
 
-@app.post("/query")
-def query_vanna(request: dict):
-    """
-    Request body:
-    { "question": "List top 5 vendors by spend" }
-    """
-    question = request.get("question")
-    result = generate_sql_and_execute(question)
-    return result
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(
+        "app.main:app",
+        host="0.0.0.0",
+        port=int(os.getenv("PORT", 8000)),
+        reload=True
+    )

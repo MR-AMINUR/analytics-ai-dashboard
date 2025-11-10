@@ -1,104 +1,35 @@
+import { NextRequest, NextResponse } from 'next/server';
 
-import { NextResponse } from "next/server";
-
-export const runtime = "nodejs";
-
-export async function POST(req: Request) {
+export async function POST(request: NextRequest) {
   try {
-    const { query } = await req.json();
+    const { question } = await request.json();
 
-    console.log("🔹 Received query:", query);
-
-    // 🔹 Send query to your Vanna Flask backend
-    const response = await fetch("http://127.0.0.1:5000/api/v0/ask", {
-      method: "POST",
+    // Proxy to your Vanna AI backend
+    const response = await fetch('http://localhost:8000/query', {
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ question: query }),
+      body: JSON.stringify({ question }),
     });
 
-    const data = await response.json();
-
-    console.log("🔹 Vanna response:", data);
-
-    if (data.error) {
-      throw new Error(data.error);
+    if (!response.ok) {
+      throw new Error(`Backend responded with status: ${response.status}`);
     }
 
+    const data = await response.json();
+    
     return NextResponse.json({
+      answer: `I found ${data.data?.length || 0} results for your query.`,
       sql: data.sql,
-      answer: data.answer,
+      data: data.data
     });
+
   } catch (error) {
-    console.error("Vanna API error:", error);
+    console.error('Chat with data error:', error);
     return NextResponse.json(
-      { error: "Failed to fetch response from Vanna backend." },
+      { error: 'Failed to process your question' },
       { status: 500 }
     );
   }
 }
-
-
-
-// import { NextResponse } from "next/server";
-
-// export const runtime = "nodejs"; // ensure proper environment for fetch + env vars
-
-// export async function POST(req: Request) {
-//   try {
-//     const { query } = await req.json();
-
-//     // 🔹 ADD THIS: for debugging
-//     console.log("🔹 Received query:", query);
-//     console.log("🔹 GROQ_API_KEY exists?", !!process.env.GROQ_API_KEY);
-
-//     const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-//       method: "POST",
-//       headers: {
-//         "Authorization": `Bearer ${process.env.GROQ_API_KEY}`,
-//         "Content-Type": "application/json",
-//       },
-//       body: JSON.stringify({
-//         model: "mixtral-8x7b-32768", // or "llama3-70b-8192"
-//         messages: [
-//           {
-//             role: "system",
-//             content:
-//               "You are an analytics assistant. You help users analyze business metrics and datasets. Always respond clearly and concisely.",
-//           },
-//           {
-//             role: "user",
-//             content: query,
-//           },
-//         ],
-//         temperature: 0.2,
-//         max_tokens: 500,
-//       }),
-//     });
-
-//     // 🔹 ADD THIS: show response info
-//     console.log("🔹 Groq status:", response.status);
-
-//     const text = await response.text();
-//     console.log("🔹 Groq raw response:", text);
-
-
-//     if (!response.ok) {
-//       const text = await response.text();
-//       throw new Error(`Groq request failed: ${response.status} - ${text}`);
-//     }
-
-//     const data = await response.json();
-
-//     return NextResponse.json({
-//       reply: data.choices?.[0]?.message?.content ?? "No response received.",
-//     });
-//   } catch (error) {
-//     console.error("Groq API error:", error);
-//     return NextResponse.json(
-//       { error: "Failed to fetch response from Groq." },
-//       { status: 500 }
-//     );
-//   }
-// }
