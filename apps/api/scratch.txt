@@ -98,3 +98,10 @@ api/invoices
     "documentsUploaded": 6,
     "averageInvoiceValue": 7955.33
   }
+
+post : api/chat-with-data
+body in json
+{
+  "question": "List top 5 vendors by spend"
+}
+response
