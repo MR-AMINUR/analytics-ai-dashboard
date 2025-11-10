@@ -20,7 +20,7 @@ import {
 } from "recharts";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE ?? "/api";
-const VANNA_ENDPOINT = process.env.NEXT_PUBLIC_VANNA_BASE_URL ?? "http://localhost:8000/query";
+const VANNA_ENDPOINT = process.env.NEXT_PUBLIC_API_URL + "/chat-with-data"
 
 async function safeJson(res: Response | null) {
   if (!res) throw new Error("No response from server");
