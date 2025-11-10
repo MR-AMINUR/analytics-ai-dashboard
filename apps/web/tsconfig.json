@@ -16,8 +16,8 @@
     "jsx": "preserve",
     "incremental": true,
    
-    "baseUrl": ".",      // 🔹 changed from "./src"
-    "paths": { "@/*": ["./*"] },       // 🔹 changed from ["*"]
+    "baseUrl": "src",      // 🔹 changed from "./src"
+    "paths": { "@/*": ["*"] },       // 🔹 changed from ["*"]
     "plugins": [{ "name": "next" }]
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
