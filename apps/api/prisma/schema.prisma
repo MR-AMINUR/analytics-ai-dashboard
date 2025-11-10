@@ -7,165 +7,79 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Organization {
-  id           String       @id @map("organization_id") @db.VarChar(50)
-  createdAt    DateTime     @default(now()) @map("created_at")
-  departments  Department[]
-  documents    Document[]
+model customers {
+  customer_id      BigInt     @id @default(autoincrement())
+  customer_name    String
+  customer_address String?
+  invoices         invoices[]
 
-  @@map("organizations")
+  @@unique([customer_name, customer_address])
 }
 
-model Department {
-  id             String       @id @map("department_id") @db.VarChar(50)
-  organizationId String       @map("organization_id") @db.VarChar(50)
-  createdAt      DateTime     @default(now()) @map("created_at")
-  organization   Organization @relation(fields: [organizationId], references: [id])
-  documents      Document[]
+model invoice_line_items {
+  line_item_id  BigInt   @id @default(autoincrement())
+  invoice_id    BigInt
+  line_no       Int?
+  description   String?
+  quantity      Decimal? @db.Decimal(18, 4)
+  unit_price    Decimal? @db.Decimal(18, 4)
+  total_price   Decimal? @db.Decimal(18, 4)
+  sachkonto     String?
+  bu_schluessel String?
+  vat_rate      Decimal? @db.Decimal(9, 4)
+  vat_amount    Decimal? @db.Decimal(18, 4)
+  invoices      invoices @relation(fields: [invoice_id], references: [invoice_id], onDelete: Cascade, onUpdate: NoAction)
 
-  @@map("departments")
+  @@index([invoice_id], map: "idx_items_invoice")
 }
 
-model Document {
-  id                   String       @id @db.VarChar(50)
-  name                 String       @db.VarChar(255)
-  filePath             String?      @map("file_path") @db.Text
-  fileSize             BigInt?      @map("file_size")
-  fileType             String?      @map("file_type") @db.VarChar(100)
-  status               String?      @db.VarChar(50)
-  organizationId       String?      @map("organization_id") @db.VarChar(50)
-  departmentId         String?      @map("department_id") @db.VarChar(50)
-  uploadedById         String?      @map("uploaded_by_id") @db.VarChar(50)
-  isValidatedByHuman   Boolean      @default(false) @map("is_validated_by_human")
-  createdAt            DateTime?    @map("created_at")
-  updatedAt            DateTime?    @map("updated_at")
-  processedAt          DateTime?    @map("processed_at")
-  analyticsId          String?      @map("analytics_id") @db.VarChar(50)
-  originalFileName     String?      @map("original_file_name") @db.VarChar(255)
-  templateName         String?      @map("template_name") @db.VarChar(100)
-  
-  organization         Organization? @relation(fields: [organizationId], references: [id])
-  department           Department?   @relation(fields: [departmentId], references: [id])
-  vendor               Vendor?
-  customer             Customer?
-  invoice              Invoice?
-  payment              Payment?
-  summary              Summary?
-  lineItems            LineItem[]
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model invoices {
+  invoice_id         BigInt               @id @default(autoincrement())
+  invoice_number     String
+  invoice_date       DateTime?            @db.Date
+  delivery_date      DateTime?            @db.Date
+  document_type      String
+  currency_symbol    String?
+  subtotal           Decimal?             @db.Decimal(18, 2)
+  total_tax          Decimal?             @db.Decimal(18, 2)
+  invoice_total      Decimal?             @db.Decimal(18, 2)
+  vendor_id          BigInt
+  customer_id        BigInt?
+  invoice_line_items invoice_line_items[]
+  customers          customers?           @relation(fields: [customer_id], references: [customer_id], onUpdate: NoAction)
+  vendors            vendors              @relation(fields: [vendor_id], references: [vendor_id], onUpdate: NoAction)
+  payments           payments[]
 
-  @@index([organizationId], map: "idx_documents_org")
-  @@index([departmentId], map: "idx_documents_dept")
-  @@index([status], map: "idx_documents_status")
-  @@map("documents")
+  @@unique([invoice_number, vendor_id])
+  @@index([customer_id], map: "idx_invoices_customer")
+  @@index([vendor_id], map: "idx_invoices_vendor")
 }
 
-model Vendor {
-  id                 Int       @id @default(autoincrement())
-  documentId         String    @unique @map("document_id") @db.VarChar(50)
-  vendorName         String?   @map("vendor_name") @db.VarChar(255)
-  vendorPartyNumber  String?   @map("vendor_party_number") @db.VarChar(50)
-  vendorAddress      String?   @map("vendor_address") @db.Text
-  vendorTaxId        String?   @map("vendor_tax_id") @db.VarChar(50)
-  confidenceName     Decimal?  @map("confidence_name") @db.Decimal(5, 2)
-  confidenceAddress  Decimal?  @map("confidence_address") @db.Decimal(5, 2)
-  confidenceTaxId    Decimal?  @map("confidence_tax_id") @db.Decimal(5, 2)
-  
-  document           Document  @relation(fields: [documentId], references: [id], onDelete: Cascade)
+model payments {
+  payment_id          BigInt    @id @default(autoincrement())
+  invoice_id          BigInt
+  due_date            DateTime? @db.Date
+  payment_terms       String?
+  bank_account_number String?
+  bic                 String?
+  account_name        String?
+  net_days            Int?
+  discount_percentage Decimal?  @db.Decimal(5, 2)
+  discount_days       Int?
+  discount_due_date   DateTime? @db.Date
+  discounted_total    Decimal?  @db.Decimal(18, 2)
+  invoices            invoices  @relation(fields: [invoice_id], references: [invoice_id], onDelete: Cascade, onUpdate: NoAction)
 
-  @@index([documentId], map: "idx_vendors_doc")
-  @@map("vendors")
+  @@index([invoice_id], map: "idx_payments_invoice")
 }
 
-model Customer {
-  id                Int       @id @default(autoincrement())
-  documentId        String    @unique @map("document_id") @db.VarChar(50)
-  customerName      String?   @map("customer_name") @db.VarChar(255)
-  customerAddress   String?   @map("customer_address") @db.Text
-  confidenceName    Decimal?  @map("confidence_name") @db.Decimal(5, 2)
-  confidenceAddress Decimal?  @map("confidence_address") @db.Decimal(5, 2)
-  
-  document          Document  @relation(fields: [documentId], references: [id], onDelete: Cascade)
+model vendors {
+  vendor_id      BigInt     @id @default(autoincrement())
+  vendor_name    String
+  vendor_address String?
+  vendor_tax_id  String?
+  invoices       invoices[]
 
-  @@index([documentId], map: "idx_customers_doc")
-  @@map("customers")
-}
-
-model Invoice {
-  id                      Int       @id @default(autoincrement())
-  documentId              String    @unique @map("document_id") @db.VarChar(50)
-  invoiceId               String?   @map("invoice_id") @db.VarChar(100)
-  invoiceDate             DateTime? @map("invoice_date") @db.Date
-  deliveryDate            DateTime? @map("delivery_date") @db.Date
-  confidenceInvoiceId     Decimal?  @map("confidence_invoice_id") @db.Decimal(5, 2)
-  confidenceInvoiceDate   Decimal?  @map("confidence_invoice_date") @db.Decimal(5, 2)
-  confidenceDeliveryDate  Decimal?  @map("confidence_delivery_date") @db.Decimal(5, 2)
-  
-  document                Document  @relation(fields: [documentId], references: [id], onDelete: Cascade)
-
-  @@index([documentId], map: "idx_invoices_doc")
-  @@index([invoiceDate], map: "idx_invoices_date")
-  @@map("invoices")
-}
-
-model Payment {
-  id                      Int       @id @default(autoincrement())
-  documentId              String    @unique @map("document_id") @db.VarChar(50)
-  dueDate                 DateTime? @map("due_date") @db.Date
-  paymentTerms            String?   @map("payment_terms") @db.Text
-  bankAccountNumber       String?   @map("bank_account_number") @db.VarChar(50)
-  bic                     String?   @db.VarChar(20)
-  accountName             String?   @map("account_name") @db.VarChar(255)
-  netDays                 Int?      @map("net_days")
-  discountPercentage      String?   @map("discount_percentage") @db.VarChar(10)
-  discountDays            Int?      @map("discount_days")
-  discountDueDate         DateTime? @map("discount_due_date") @db.Date
-  discountedTotal         Decimal?  @map("discounted_total") @db.Decimal(15, 2)
-  confidencePaymentTerms  Decimal?  @map("confidence_payment_terms") @db.Decimal(5, 2)
-  confidenceBankAccount   Decimal?  @map("confidence_bank_account") @db.Decimal(5, 2)
-  
-  document                Document  @relation(fields: [documentId], references: [id], onDelete: Cascade)
-
-  @@index([documentId], map: "idx_payments_doc")
-  @@map("payments")
-}
-
-model Summary {
-  id                      Int       @id @default(autoincrement())
-  documentId              String    @unique @map("document_id") @db.VarChar(50)
-  documentType            String?   @map("document_type") @db.VarChar(50)
-  subTotal                Decimal?  @map("sub_total") @db.Decimal(15, 2)
-  totalTax                Decimal?  @map("total_tax") @db.Decimal(15, 2)
-  invoiceTotal            Decimal?  @map("invoice_total") @db.Decimal(15, 2)
-  currencySymbol          String?   @map("currency_symbol") @db.VarChar(10)
-  confidenceSubTotal      Decimal?  @map("confidence_sub_total") @db.Decimal(5, 2)
-  confidenceTotalTax      Decimal?  @map("confidence_total_tax") @db.Decimal(5, 2)
-  confidenceInvoiceTotal  Decimal?  @map("confidence_invoice_total") @db.Decimal(5, 2)
-  
-  document                Document  @relation(fields: [documentId], references: [id], onDelete: Cascade)
-
-  @@index([documentId], map: "idx_summaries_doc")
-  @@map("summaries")
-}
-
-model LineItem {
-  id                    Int       @id @default(autoincrement())
-  documentId            String    @map("document_id") @db.VarChar(50)
-  srNo                  Int?      @map("sr_no")
-  description           String?   @db.Text
-  quantity              Decimal?  @db.Decimal(15, 2)
-  unitPrice             Decimal?  @map("unit_price") @db.Decimal(15, 2)
-  totalPrice            Decimal?  @map("total_price") @db.Decimal(15, 2)
-  sachkonto             String?   @db.VarChar(50)
-  buSchluessel          String?   @map("bu_schluessel") @db.VarChar(50)
-  vatRate               Decimal?  @map("vat_rate") @db.Decimal(5, 2)
-  vatAmount             Decimal?  @map("vat_amount") @db.Decimal(15, 2)
-  confidenceDescription Decimal?  @map("confidence_description") @db.Decimal(5, 2)
-  confidenceQuantity    Decimal?  @map("confidence_quantity") @db.Decimal(5, 2)
-  confidenceUnitPrice   Decimal?  @map("confidence_unit_price") @db.Decimal(5, 2)
-  confidenceTotalPrice  Decimal?  @map("confidence_total_price") @db.Decimal(5, 2)
-  
-  document              Document  @relation(fields: [documentId], references: [id], onDelete: Cascade)
-
-  @@index([documentId], map: "idx_line_items_doc")
-  @@map("line_items")
+  @@unique([vendor_name, vendor_tax_id])
 }
