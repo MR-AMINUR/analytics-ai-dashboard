@@ -1,5 +1,3 @@
-
-
 "use client";
 
 import Image from "next/image";
@@ -32,13 +30,21 @@ export default function DashboardLayout({
 
   return (
     <div className="flex min-h-screen bg-gray-50">
-      {/* Sidebar */}
-      <aside className="w-64 bg-white border-r flex flex-col justify-between">
+      {/* ✅ Sticky Sidebar */}
+      <aside className="w-64 bg-white border-r flex flex-col justify-between h-screen sticky top-0 overflow-y-auto">
         <div>
+          {/* ✅ Logo block with fallback */}
           <div className="flex items-center gap-2 p-4 border-b">
-            <Image src="/logo.svg" alt="Flowbit AI" width={28} height={28} />
-            <h1 className="text-lg font-bold">Flowbit AI</h1>
+            <div className="flex h-8 w-8 items-center justify-center rounded bg-indigo-100 text-indigo-600 font-bold">
+              F
+            </div>
+            <div className="flex flex-col leading-tight">
+              <span className="text-base font-semibold">Flowbit AI</span>
+              <span className="text-xs text-gray-500">Analytics</span>
+            </div>
           </div>
+
+
           <nav className="p-4 space-y-2">
             <h3 className="text-xs text-gray-400 uppercase mb-2">General</h3>
             {menu.map((item) => (
@@ -73,7 +79,7 @@ export default function DashboardLayout({
           </nav>
         </div>
 
-        {/* Sidebar bottom summary (optional metrics) */}
+        {/* ✅ Sidebar bottom summary */}
         <div className="p-4 space-y-2 text-sm">
           <div className="rounded-lg bg-indigo-50 p-3">
             <p className="text-xs text-gray-500">Total Spend</p>
@@ -88,27 +94,29 @@ export default function DashboardLayout({
         </div>
       </aside>
 
-      {/* Main content */}
-      <main className="flex-1 flex flex-col">
-        <header className="flex justify-between items-center p-4 bg-white border-b">
+      {/* ✅ Main Content */}
+      <main className="flex-1 flex flex-col min-h-screen overflow-hidden">
+        <header className="flex justify-between items-center p-4 bg-white border-b sticky top-0 z-10">
           <div>
             <h2 className="text-lg font-semibold">Dashboard</h2>
             <p className="text-sm text-gray-400">Buchhaltung • 12 members</p>
           </div>
 
+          {/* Header user info (dynamic) */}
           <div className="flex items-center gap-3">
             <div className="text-right">
-              <p className="font-medium">Amit Jadhav</p>
-              <p className="text-xs text-gray-500">User</p>
+              <p className="font-medium">{typeof window !== "undefined" && localStorage.getItem("userName") ? localStorage.getItem("userName") : "Guest"}</p>
+              <p className="text-xs text-gray-500">
+                {typeof window !== "undefined" && localStorage.getItem("userEmail")
+                  ? localStorage.getItem("userEmail")
+                  : "Not signed in"}
+              </p>
             </div>
-            <Image
-              src="/avatar.svg"
-              alt="User Avatar"
-              width={36}
-              height={36}
-              className="rounded-full border"
-            />
+            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-indigo-100 border text-indigo-600 font-semibold">
+              A
+            </div>
           </div>
+
         </header>
 
         <section className="flex-1 overflow-y-auto p-6 bg-gray-50">
@@ -118,82 +126,3 @@ export default function DashboardLayout({
     </div>
   );
 }
-
-
-
-
-
-
-
-
-
-
-// 'use client';
-// import { ReactNode } from 'react';
-// import { Home, FileText, Folder, Users, Settings } from 'lucide-react';
-// import Link from 'next/link';
-// import Image from 'next/image';
-
-// export default function DashboardLayout({ children }: { children: ReactNode }) {
-//   return (
-//     <div className="flex h-screen bg-background">
-//       {/* Sidebar */}
-//       <aside className="w-64 bg-white border-r border-border flex flex-col justify-between">
-//         <div>
-//           <div className="flex items-center gap-2 p-4 border-b">
-//             <Image src="/logo.png" alt="Flowbit AI" width={28} height={28} />
-//             <span className="font-semibold text-lg">Flowbit AI</span>
-//           </div>
-//           <nav className="flex flex-col mt-4">
-//             <SidebarLink href="/" icon={<Home size={16} />} label="Dashboard" active />
-//             <SidebarLink href="/invoices" icon={<FileText size={16} />} label="Invoice" />
-//             <SidebarLink href="/other-files" icon={<Folder size={16} />} label="Other files" />
-//             <SidebarLink href="/departments" icon={<Users size={16} />} label="Departments" />
-//             <SidebarLink href="/users" icon={<Users size={16} />} label="Users" />
-//             <SidebarLink href="/settings" icon={<Settings size={16} />} label="Settings" />
-//           </nav>
-//         </div>
-//         <div className="p-4 text-sm text-muted-foreground">© Flowbit AI</div>
-//       </aside>
-
-//       {/* Main Content */}
-//       <div className="flex-1 flex flex-col">
-//         <header className="flex justify-between items-center p-4 border-b bg-white">
-//           <div className="text-lg font-semibold">Dashboard</div>
-//           <div className="flex items-center gap-2">
-//             <span className="text-sm text-muted-foreground">Amit Jadhav</span>
-//             <Image src="/avatar.png" alt="User" width={32} height={32} className="rounded-full" />
-//           </div>
-//         </header>
-
-//         <main className="p-6 overflow-auto bg-[#F9FAFB]">{children}</main>
-//       </div>
-//     </div>
-//   );
-// }
-
-// function SidebarLink({
-//   href,
-//   icon,
-//   label,
-//   active,
-// }: {
-//   href: string;
-//   icon: ReactNode;
-//   label: string;
-//   active?: boolean;
-// }) {
-//   return (
-//     <Link
-//       href={href}
-//       className={`flex items-center gap-3 px-4 py-2 text-sm font-medium rounded-md mx-2 mb-1 ${
-//         active
-//           ? 'bg-indigo-100 text-indigo-700'
-//           : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
-//       }`}
-//     >
-//       {icon}
-//       {label}
-//     </Link>
-//   );
-// }
