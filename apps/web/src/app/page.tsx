@@ -6,6 +6,7 @@ import {
   BarChart, Bar, PieChart, Pie, Cell,
 } from "recharts";
 
+const API_BASE = process.env.NEXT_PUBLIC_API_BASE;
 type AnyObj = Record<string, any>;
 
 function ensureArray<T = any>(v: any): T[] {
@@ -68,12 +69,12 @@ export default function DashboardPage() {
       setError(null);
       try {
         const [statsRes, trendRes, vendorRes, catRes, cashRes, invRes] = await Promise.all([
-          fetch("/api/stats"),
-          fetch("/api/invoice-trends"),
-          fetch("/api/vendors/top10"),
-          fetch("/api/category-spend"),
-          fetch("/api/cash-outflow"),
-          fetch("/api/invoices"),
+          fetch(API_BASE+"/stats"),
+          fetch(API_BASE+"/invoice-trends"),
+          fetch(API_BASE+"/vendors/top10"),
+          fetch(API_BASE+"/category-spend"),
+          fetch(API_BASE+"/cash-outflow"),
+          fetch(API_BASE+"/invoices"),
         ]);
         if (!mounted) return;
         setStats(await statsRes.json());
