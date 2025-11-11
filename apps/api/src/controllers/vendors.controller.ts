@@ -4,8 +4,8 @@ import { fetchTopVendors } from "../services/vendors.service";
 
 export const getTopVendors = async (req: Request, res: Response) => {
   try {
-    const top = Number(req.query.limit ?? 10);
-    const data = await fetchTopVendors(top);
+    const limit = Number(req.query.limit ?? 10);
+    const data = await fetchTopVendors(limit);
     res.json(data);
   } catch (err) {
     console.error("getTopVendors error:", err);

@@ -1,7 +1,13 @@
 // src/controllers/invoices.controller.ts
 import { Request, Response } from "express";
-import { fetchInvoiceTrends, listInvoicesService } from "../services/invoices.service";
+import {
+  fetchInvoiceTrends,
+  listInvoicesService,
+  fetchDashboardInvoices,
+  fetchInvoicesByVendor,
+} from "../services/invoices.service";
 
+// ✅ Line chart
 export const getInvoiceTrends = async (req: Request, res: Response) => {
   try {
     const months = Number(req.query.months ?? 12);
@@ -13,25 +19,40 @@ export const getInvoiceTrends = async (req: Request, res: Response) => {
   }
 };
 
+// ✅ Dashboard invoices table
+export const getRecentInvoices = async (req: Request, res: Response) => {
+  try {
+    const limit = Number(req.query.limit ?? 9);
+    const data = await fetchDashboardInvoices(limit);
+    res.json(data);
+  } catch (err) {
+    console.error("getRecentInvoices error:", err);
+    res.status(500).json({ error: "Failed to fetch recent invoices" });
+  }
+};
+
+// ✅ Paginated list for full invoices page
 export const listInvoices = async (req: Request, res: Response) => {
   try {
-    const q = req.query;
-    const result = await listInvoicesService({
-      page: Number(q.page ?? 1),
-      pageSize: Number(q.pageSize ?? 25),
-      vendor: q.vendor as string | undefined,
-      invoiceNumber: q.invoiceNumber as string | undefined,
-      dateFrom: q.dateFrom as string | undefined,
-      dateTo: q.dateTo as string | undefined,
-      minAmount: q.minAmount ? Number(q.minAmount) : undefined,
-      maxAmount: q.maxAmount ? Number(q.maxAmount) : undefined,
-      sortBy: (q.sortBy as string) || "invoice_date",
-      sortOrder: (q.sortOrder as "asc" | "desc") || "desc",
-      search: q.search as string | undefined,
-    });
+    const result = await listInvoicesService(req.query);
     res.json(result);
   } catch (err) {
     console.error("listInvoices error:", err);
     res.status(500).json({ error: "Failed to list invoices" });
   }
 };
+
+// ... keep existing exports
+
+// ✅ Invoices by Vendor table (for dashboard)
+export const getInvoicesByVendor = async (req: Request, res: Response) => {
+  try {
+    const limit = Number(req.query.limit ?? 10);
+    const data = await fetchInvoicesByVendor(limit);
+    res.json(data);
+  } catch (err) {
+    console.error("getInvoicesByVendor error:", err);
+    res.status(500).json({ error: "Failed to fetch invoices by vendor" });
+  }
+};
+
