@@ -9,7 +9,7 @@
     "dev": {
       "cache": false,
       "persistent": true,
-      "env": ["PORT", "DATABASE_URL", "NEXT_PUBLIC_API_BASE", "NEXT_PUBLIC_APP_URL"]
+      "env": ["DATABASE_URL", "VANNA_API_BASE_URL", "VANNA_API_KEY", "NEXT_PUBLIC_API_BASE", "NEXT_PUBLIC_APP_URL"]
     },
     "lint": {
       "outputs": []
