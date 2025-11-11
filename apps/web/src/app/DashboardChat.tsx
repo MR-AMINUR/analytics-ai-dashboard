@@ -19,8 +19,7 @@ import {
   Pie,
 } from "recharts";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE ?? "/api";
-const VANNA_ENDPOINT = process.env.NEXT_PUBLIC_API_URL + "/chat-with-data"
+const API_BASE = process.env.NEXT_PUBLIC_API_BASE;
 
 async function safeJson(res: Response | null) {
   if (!res) throw new Error("No response from server");
@@ -82,7 +81,7 @@ export async function fetchInvoices(query = "", signal?: AbortSignal) {
 export async function chatWithData(question: string) {
   let res: Response | null = null;
   try {
-    res = await fetch(VANNA_ENDPOINT, {
+    res = await fetch(API_BASE+"/chat-with-data", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ question }),
