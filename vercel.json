@@ -6,7 +6,7 @@
       "use": "@vercel/node"
     },
     {
-      "src": "apps/web/next.config.ts",
+      "src": "apps/web/package.json",
       "use": "@vercel/next"
     }
   ],
