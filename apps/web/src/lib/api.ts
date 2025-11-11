@@ -1,54 +1,20 @@
-export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+// apps/web/src/lib/api.ts
+const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:4000/api";
 
-export async function fetchData(endpoint: string) {
-  try {
-    const res = await fetch(`${API_BASE_URL}${endpoint}`);
-    if (!res.ok) throw new Error(`Request failed: ${res.status}`);
-    return await res.json();
-  } catch (err) {
-    console.error("API fetch error:", err);
-    return null;
+async function request(path: string, opts: RequestInit = {}) {
+  const url = path.startsWith("/") ? `${API_BASE}${path}` : `${API_BASE}/${path}`;
+  const res = await fetch(url, { ...opts, headers: { "Content-Type": "application/json", ...(opts.headers || {}) }});
+  if (!res.ok) {
+    const txt = await res.text().catch(() => "");
+    throw new Error(`API ${url} failed: ${res.status} ${txt}`);
   }
-}
-
-
-export async function fetchStats() {
-  try {
-    const res = await fetch("/api/stats");
-    if (!res.ok) {
-      throw new Error(`Failed to fetch stats: ${res.status}`);
-    }
-    const data: {
-      totalSpend: number;
-      totalInvoices: number;
-      avgInvoice: number;
-    } = await res.json();
-    return data;
-  } catch (error) {
-    if (error instanceof Error) {
-      throw new Error(error.message);
-    }
-    throw new Error("Unknown error fetching stats");
-  }
-}
-
-// export async function fetchStats() {
-//   console.log("Fetching from:", `${API_BASE_URL}/api/stats`); // 👈 add this line
-//   const res = await fetch(`${API_BASE_URL}/api/stats`);
-//   if (!res.ok) throw new Error("Failed to fetch stats");
-//   return res.json();
-// }
-
-
-export async function fetchVendorsTop10() {
-  const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
-  const res = await fetch(`${baseUrl}/api/vendors/top10`);
-  if (!res.ok) throw new Error("Failed to fetch top vendors");
   return res.json();
 }
 
-export async function fetchInvoices() {
-  const res = await fetch(`${API_BASE_URL}/api/invoices`);
-  if (!res.ok) throw new Error("Failed to fetch invoices");
-  return res.json();
-}
+export const fetchStats = () => request("/stats");
+export const fetchInvoiceTrends = () => request("/invoice-trends");
+export const fetchTopVendors = () => request("/vendors/top10");
+export const fetchCategorySpend = () => request("/category-spend");
+export const fetchCashOutflow = () => request("/cash-outflow");
+export const fetchInvoices = (q = "") => request(`/invoices${q ? `?${q}` : ""}`);
+export const chatWithData = (question: string) => request("/chat-with-data", { method: "POST", body: JSON.stringify({ question }) });
